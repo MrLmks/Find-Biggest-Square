@@ -1,5 +1,6 @@
 
-import os, tkinter as tk
+import os
+from tkinter import *
 
 
 
@@ -8,15 +9,21 @@ class Buttons:
         self.name = name
         self.path = path
     
-    def display_map(self, path):
-        try:
+    def display_map(self, window, path):
+        try:            
             with open(path, "r") as map:
-                for line in map:
-                    print(line)
+                map_content = map.readlines()
+                num_rows = len(map_content)
+                num_cols = len(map_content[0].strip())
+                cell_size = 20
+                canva = Canvas(window, bg="black", height=num_rows * cell_size, width=num_cols * cell_size)
+                canva.pack()
+                for y, line in enumerate(map_content):
+                    for x, cell in enumerate(line.strip()):
+                        canva.create_rectangle(x * cell_size, y * cell_size, (x + 1) * cell_size, (y + 1) * cell_size, fill="white", outline="lightblue")
         except FileNotFoundError:
-            print(f"File not found {path}")
-            print(f"Current directory: {os.getcwd()}")
-            print(f"Path to map {os.path.abspath(path)}")
+            print(f"File not found at {path}")
+
 
     def create_buttons_maps(self):
         buttons = {}
@@ -26,18 +33,6 @@ class Buttons:
                 file_path = os.path.join("maps", file)
                 buttons[button_name] = file_path
         return buttons
-        # map_buttons = []
-        # try: 
-        #     for file in os.listdir("maps"):
-        #         if os.path.isfile(file):
-        #             button_name = f"{file}_button"
-        #             button_path = f"./maps/{file}.txt"
-        #             map_button = button_name + button_path
-        #             map_buttons.append(map_button)
-        #     print(map_buttons)
-        #     return map_buttons
-        # except FileNotFoundError:
-        #     print(f"File not found {file}")
 
     def on_click(self, path):
         self.display_map(self, path)
