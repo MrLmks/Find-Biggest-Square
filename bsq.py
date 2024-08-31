@@ -2,7 +2,26 @@
 import os
 import tkinter as tk
 
+def find_biggest_square(map_content):
+    rows = len(map_content)
+    columns = len(map_content[0].strip())
+    matrix = [[0] * columns for _ in range(rows)]
+    max_size = 0
+    pax_pos = (0, 0)
 
+    for x in range(rows):
+        for y in range(columns):
+            if map_content[x][y] == ".":
+                if x == 0 or y == 0:
+                    matrix[x][y] = 1
+                else:
+                    matrix[x][y] = min(matrix[x - 1][y], matrix[x][y - 1], matrix[x - 1][y - 1]) + 1
+
+                if matrix[x][y] > max_size:
+                    max_size = matrix[x][y]
+                    max_pos = (x, y)
+    
+    return max_size, max_pos
 
 class Buttons:
     def __init__(self, name, path):
@@ -30,6 +49,21 @@ class Buttons:
                         else:
                             color = "white"
                         self.canva.create_rectangle(x * cell_size, y * cell_size, (x + 1) * cell_size, (y + 1) * cell_size, fill=color, outline="lightblue")
+                max_size, (start_x, start_y) = find_biggest_square(map_content)
+                top_left_x = start_x - max_size + 1
+                top_left_y = start_y - max_size + 1
+                
+                for i in range(max_size):
+                    for j in range(max_size):
+                        self.canva.create_rectangle(
+                            (top_left_y + j) * cell_size,
+                            (top_left_x + i) * cell_size,
+                            (top_left_y + j + 1) * cell_size,
+                            (top_left_x + i + 1) * cell_size,
+                            fill="blue",
+                            outline="lightblue"
+                        )
+
         except FileNotFoundError:
             print(f"File not found at {path}")
 
@@ -44,4 +78,4 @@ class Buttons:
         return buttons
 
     def on_click(self, path):
-        self.display_map(self, path)
+        self.display_map(self, path) 
